@@ -1,5 +1,5 @@
 {
-  "name": "day1",
+  "name": "day2",
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
@@ -8,9 +8,6 @@
   "author": "",
   "license": "ISC",
   "description": "",
-  "devDependencies": {
-    "typescript": "^5.7.2"
-  },
   "dependencies": {
     "@types/node": "^22.10.1"
   }

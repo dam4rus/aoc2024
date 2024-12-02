@@ -11,7 +11,7 @@ const INPUT = `3   4
 
 describe('Day 1', () => {
   it('Part 1', () => {
-    assert.strictEqual( part1(INPUT), 11)
+    assert.strictEqual(part1(INPUT), 11)
   })
 
   it('Part 2', () => {
