@@ -1,6 +1,6 @@
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
-import { part1 } from "./index";
+import { part1, part2 } from "./index";
 
 const INPUT = `47|53
 97|13
@@ -34,5 +34,9 @@ const INPUT = `47|53
 describe("Day 5", () => {
   it("Part 1", () => {
     assert.strictEqual(part1(INPUT), 143);
+  });
+
+  it("Part 2", () => {
+    assert.strictEqual(part2(INPUT), 123);
   });
 });
