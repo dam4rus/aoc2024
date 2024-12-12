@@ -1,46 +1,53 @@
 import fs from "node:fs";
 
-export function depthCount(depth: number): number {
+export function depthCount(operatorCount: number, depth: number): number {
   let result = 1;
   for (let i = 0; i < depth - 1; i++) {
-    result *= 2;
+    result *= operatorCount;
   }
   return result;
 }
 
-function appendOperators(list: string[][], depth: number) {
+function appendOperators(list: string[][], operators: string[], depth: number) {
   if (list.length <= 1) {
     return;
   }
-  const operatorCount = depthCount(depth);
-  for (let i = 0; i < Math.floor(list.length / 2); i++) {
-    list[i].push("+");
-  }
-  for (let i = Math.floor(list.length / 2); i < list.length; i++) {
-    list[i].push("*");
-  }
-  appendOperators(list.slice(0, operatorCount), depth - 1);
-  appendOperators(list.slice(operatorCount), depth - 1);
+  const operatorCount = depthCount(operators.length, depth);
+  operators.forEach((operator, i) => {
+    for (let l of list.slice(i * operatorCount, (i + 1) * operatorCount)) {
+      l.push(operator);
+    }
+    appendOperators(
+      list.slice(i * operatorCount, (i + 1) * operatorCount),
+      operators,
+      depth - 1,
+    );
+  });
 }
 
-export function generateOperators(depth: number): string[][] {
+export function generateOperators(
+  operators: string[],
+  depth: number,
+): string[][] {
   if (depth <= 0) {
     return;
   }
   const list: string[][] = [];
-  const operatorCount = depthCount(depth);
-  for (let i = 0; i < operatorCount; i++) {
-    list.push(["+"]);
-  }
-  for (let i = 0; i < operatorCount; i++) {
-    list.push(["*"]);
-  }
-  appendOperators(list.slice(0, operatorCount), depth - 1);
-  appendOperators(list.slice(operatorCount), depth - 1);
+  const operatorCount = depthCount(operators.length, depth);
+  operators.forEach((operator, i) => {
+    for (let i = 0; i < operatorCount; i++) {
+      list.push([operator]);
+    }
+    appendOperators(
+      list.slice(i * operatorCount, (i + 1) * operatorCount),
+      operators,
+      depth - 1,
+    );
+  });
   return list;
 }
 
-export function part1(input: string): number {
+function sum(input: string, operators: string[]): number {
   return input
     .split("\n")
     .filter((line) => line.length > 0)
@@ -56,20 +63,19 @@ export function part1(input: string): number {
       return { testValue: testValue, numbers: numbers };
     })
     .filter(({ testValue, numbers }) => {
-      // console.log(`test value: ${testValue}`);
-      // console.log(numbers.length - 1);
-      // console.log(generateOperators(numbers.length - 1));
-      for (let operators of generateOperators(numbers.length - 1)) {
-        // console.log(operators);
+      for (let ops of generateOperators(operators, numbers.length - 1)) {
         const result = numbers.reduce((acc, value, i) => {
-          // console.log(i);
-          // console.log(operators[i - 1]);
-          if (operators[i - 1] == "*") {
+          if (ops[i - 1] === "*") {
             return acc * value;
+          }
+          if (ops[i - 1] === "||") {
+            // console.log(`testValue = ${testValue}`);
+            // console.log(`acc: ${acc}, value: ${value}`);
+            // console.log(parseInt(acc.toString() + value.toString()));
+            return parseInt(acc.toString() + value.toString());
           }
           return acc + value;
         });
-        // console.log(result);
         if (result === testValue) {
           return true;
         }
@@ -79,5 +85,14 @@ export function part1(input: string): number {
     .reduce((acc, { testValue }) => acc + testValue, 0);
 }
 
+export function part1(input: string): number {
+  return sum(input, ["+", "*"]);
+}
+
+export function part2(input: string): number {
+  return sum(input, ["+", "*", "||"]);
+}
+
 const input = fs.readFileSync("input.txt").toString();
 console.log(part1(input));
+console.log(part2(input));
